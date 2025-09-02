@@ -3,7 +3,7 @@ name: Flask Continuous Integration
 
 on: #Trigger whenever there is a push to the main branch
   push:
-  branches: [main, master]
+    branches: [main, master]
 
 
 jobs: # The action
