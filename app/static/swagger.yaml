@@ -1,0 +1,191 @@
+
+swagger: '2.0'
+info:
+  title: "Mechanics shop API"
+  description: "Used to manage everday functionalites of a Mechanic shop"
+  version: "0.0.1"
+
+host: "127.0.0.1:5000"
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+securityDefinitions:
+  bearerAuth:
+  type: apiKey
+  name: Authorization
+  in: header
+
+paths: 
+
+  /mechanics/login:
+    post:
+      tags:
+        - Mechanics
+      summary: "logins for the Mechanics our workers (generates a token)"
+      description: "validates user credentials (email and password), and produces a user specific token."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Login Credentials"
+          required: true
+          schema:
+            $ref: "#/definitions/LoginCredentials"
+      responses:
+        200:
+          description: "Login Successful"
+          scehma:
+            $ref: "#/definitions/LoginResponse"
+          examples:
+            application/json:
+                message: "Login Successful"
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODg3MTI4NTV9.DmX4kNfX4XH5Zk3n0vZt8fYv3h6Qz8Qz8Qz8Qz8Qz8"
+  
+  /mechanics:
+    post:
+      tags:
+        - Users
+      summary: "enpoint to create a new user"
+      description: "send used info to create a user profile to store in db. create a new user with email, password, role and token, DOB AND address are optional"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "New User Information"
+          required: true
+          schema:
+            $ref: "#/definitions/UserInput"
+      responses:
+        201:
+          description: "Creetion Succesful"
+          scemas:
+            $ref: "#/definitions/UserResponse"
+          examples:
+            application/json:
+                id: 0
+                email: "tester@email.com"
+                role: "admin"
+                password: "<encrypted password>"
+                DOB: "1900-01-01"
+                username: "tester"
+                address: "123 test st, test city, TX 75001"
+    get: 
+      tags:
+        - Mechanics
+      summary: Return all Mechanics
+      description: Returns a list of all mechanics in the database
+      responses:
+        200:
+          description: A list of mechanics
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/mechanicsReponse"
+          examples:
+            application/json:
+              - id: 1
+                email: "
+    put: 
+      tags: 
+      - Mechanics
+      summary: "Update a mechanic's endpoint"
+      description: "endpoint to update  a user, requires a token, user will be identified by the token"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Update User Information"
+          required: true
+          schema:
+            $ref: "#/definitions/mechanicsInput"
+
+      responses:
+        200:
+          description: "Update Successful"
+          schema:
+            $ref: "#/definitions/mechanicsResponse"
+          examples:
+            application/json:
+                id: 1
+                email: """
+    delete:
+      tags:
+        - Mechanics 
+      summary: "Delete a mechanic"
+      description: "deletes a mechanic from the database, identified by the token provided" 
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          scema:
+            type: object
+            properties:
+              message:
+                type: string
+
+    
+
+definitions:
+
+  LoginCredentials:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string 
+
+    required:
+      - email 
+      - password 
+
+  LoginResponse:
+    type: object
+    properties:
+      message:
+        type: string
+      token:
+        type: string    
+
+  mechanicsInput:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      token:
+        type: string  
+
+  mechanicsResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      email:
+        type: string
+      role:
+        type: string
+      token:
+        type: string    
+
+  mechanicsReponse:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+        token:
+          type: string
