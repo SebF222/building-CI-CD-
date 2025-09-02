@@ -1,7 +1,7 @@
 
 name: Flask Continuous Integration
 
-on: #Triigger whenever there is a push to the main branch
+on: #Trigger whenever there is a push to the main branch
   push:
   branches: [main, master]
 
@@ -40,7 +40,7 @@ jobs: # The action
     needs: build #Means that we need the build job to complete before we run our test 
     runs-on: ubuntu-latest # still have to re write
 
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2 # check for errors and make sure there isnt any 
