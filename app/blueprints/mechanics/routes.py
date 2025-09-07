@@ -3,9 +3,9 @@ from flask import request, jsonify, session
 from app.blueprints.mechanics import mechanics_bp
 from marshmallow import ValidationError
 from sqlalchemy import select
-from app.models import Mechanics, db
+from app.models import Mechanics, db, ticket_mechanics
 from . import mechanics_bp
-from app.extensions import limiter
+from app.extensions import limiter, cache
 from app.utils.util import encode_token, token_required 
 
 
@@ -55,6 +55,7 @@ def create_member():
     return mechanic_schema.jsonify(new_mechanic), 201 
     
 @mechanics_bp.route("", methods=['GET'])
+@cache.cached(timeout=300)  # Cache for 5 minutes
 def get_mechanics():
     query = select(Mechanics)
     mechanics = db.session.execute(query).scalars().all()
@@ -102,12 +103,42 @@ def delete_mechanic(mechanic_id):
     db.session.commit()
     return jsonify({"message": f'mechanic id {mechanic_id}, successfully deleted.'}), 200
 
+@mechanics_bp.route("/my-tickets", methods=['GET'])
+@token_required
+def get_my_tickets(mechanic_id):
+    mechanic = db.session.get(Mechanics, mechanic_id)
+    if not mechanic:
+        return jsonify({"error": "Mechanic not found"}), 404
+        
+    return jsonify([{
+        "id": ticket.id,
+        "description": ticket.description,
+        "price": ticket.price,
+        "vin": ticket.vin,
+        "date": ticket.date.isoformat(),
+        "customer": f"{ticket.customer.first_name} {ticket.customer.last_name}"
+    } for ticket in mechanic.service_tickets]), 200
 
-
-
-
-
-
-
-
-
+@mechanics_bp.route("/by-tickets", methods=['GET'])
+def get_mechanics_by_ticket_count():
+    query = db.session.query(
+        Mechanics,
+        db.func.count(ticket_mechanics.c.ticket_id).label('ticket_count')
+    ).join(
+        ticket_mechanics,
+        Mechanics.id == ticket_mechanics.c.mechanic_id,
+        isouter=True
+    ).group_by(
+        Mechanics.id
+    ).order_by(
+        db.desc('ticket_count')
+    )
+    
+    mechanics = query.all()
+    
+    return jsonify([{
+        "id": mechanic.id,
+        "name": f"{mechanic.first_name} {mechanic.last_name}",
+        "email": mechanic.email,
+        "ticket_count": ticket_count
+    } for mechanic, ticket_count in mechanics]), 200

@@ -7,7 +7,7 @@ info:
 
 host: "127.0.0.1:5000"
 schemes:
-  - "http"
+  - "https"
 consumes:
   - "application/json"
 produces:

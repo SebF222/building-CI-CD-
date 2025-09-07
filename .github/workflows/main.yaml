@@ -1,67 +1,92 @@
-
 name: Flask Continuous Integration
 
 on: #Trigger whenever there is a push to the main branch
   push:
     branches: [main, master]
 
-
 jobs: # The action
   build:
-    runs-on : ubuntu-latest #universal as, that is heavily supported by developers
+    runs-on: ubuntu-latest #universal as, that is heavily supported by developers
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2 # check for errors and make sure there isnt any 
+      - name: Checkout code
+        uses: actions/checkout@v2 # check for errors and make sure there isnt any
 
-    - name: Set Up Python
-      uses: action/setup-python@v2
-      with:
-        python-version: 3.12
+      - name: Set Up Python
+        uses: action/setup-python@v2
+        with:
+          python-version: 3.12
 
-    - name: Create Virtual Enviornment
-      run: | 
-        python -m venv venv 
-        source venv/bin/activate
+      - name: Create Virtual Enviornment
+        run: |
+          python -m venv venv 
+          source venv/bin/activate
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --ugrade pip 
-        python -m pip install -r requirements.txt
-    
-    - name: Print debugging information
-      run: |
-        echo "Python Verison: $(python --version)"
-        echo "Working Directory: $(pwd)"
-        echo "Contents of Work Directory $(ls -l)"
-        echo "Contents of site-packages: $(ls -l venv/lib/python*/site-packages)"
+      - name: Install dependencies
+        run: |
+          python -m pip install --ugrade pip 
+          python -m pip install -r requirements.txt
 
-  test: 
-    needs: build #Means that we need the build job to complete before we run our test 
+      - name: Print debugging information
+        run: |
+          echo "Python Verison: $(python --version)"
+          echo "Working Directory: $(pwd)"
+          echo "Contents of Work Directory $(ls -l)"
+          echo "Contents of site-packages: $(ls -l venv/lib/python*/site-packages)"
+
+  test:
+    needs: build #Means that we need the build job to complete before we run our test
     runs-on: ubuntu-latest # still have to re write
 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2 # check for errors and make sure there isnt any
+
+      - name: Set Up Python
+        uses: action/setup-python@v2
+        with:
+          python-version: 3.12
+
+      - name: Create Virtual Enviornment
+        run: |
+          python -m venv venv 
+          source venv/bin/activate
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --ugrade pip 
+          python -m pip install -r requirements.txt
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -p 'test_*.py' #Running all test files inside my test folder as long as the file is named test_<anthing>.py
+
+  deploy: 
+    needs: build #Means that we need the build job to complete before we run our test
+    runs-on: ubuntu-latest # still have to re write
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2 # check for errors and make sure there isnt any 
+      - name: Checkout code
+        uses: actions/checkout@v2 # check for errors and make sure there isnt any
 
-    - name: Set Up Python
-      uses: action/setup-python@v2
-      with:
-        python-version: 3.12
+      - name: Set Up Python
+        uses: action/setup-python@v2
+        with:
+          python-version: 3.12
 
-    - name: Create Virtual Enviornment
-      run: | 
-        python -m venv venv 
-        source venv/bin/activate
+      - name: Create Virtual Enviornment
+        run: |
+          python -m venv venv 
+          source venv/bin/activate
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --ugrade pip 
-        python -m pip install -r requirements.txt
-
-    - name: Run tests
-      run: python -m unittest discover -s tests -p 'test_*.py' #Running all test files inside my test folder as long as the file is named test_<anthing>.py
-
-
+      - name: Install dependencies
+        run: |
+          python -m pip install --ugrade pip 
+          python -m pip install -r requirements.txt
+        
+      - name: Deploy to production
+        uses: johnbeynon/render-deploy-action@v.0.0.8
+        with: 
+          service-id: ${{ secrets.SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+          
 

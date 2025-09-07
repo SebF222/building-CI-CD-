@@ -4,6 +4,8 @@ from app.extensions import ma , limiter, cache
 from .blueprints.mechanics import mechanics_bp
 from .blueprints.customers import customers_bp
 from .blueprints.service_tickets import service_tickets_bp
+from .blueprints.parts import parts_bp
+from .blueprints.inventory import inventory_bp
 from flask_swagger_ui import get_swaggerui_blueprint
 
 
@@ -25,10 +27,13 @@ def create_app(config_name):
     cache.init_app(app)
 
     
+    
     app.register_blueprint(mechanics_bp, url_prefix='/mechanics')
     app.register_blueprint(customers_bp, url_prefix='/customers')
     app.register_blueprint(service_tickets_bp, url_prefix='/service_tickets')
     app.register_blueprint(swagger_blueprint, url_prefix=SWAGGER_URL)
+    app.register_blueprint(parts_bp, url_prefix='/parts')
+    app.register_blueprint(inventory_bp, url_prefix='/inventory') 
     # app.regiester_blueprint(service_tickets_bp, url_prefix='/service_tickets') # make a new blueprint 
 
     return app 

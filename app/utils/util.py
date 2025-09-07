@@ -2,14 +2,17 @@ import jwt
 from datetime import datetime, timezone, timedelta  
 from functools import wraps
 from flask import request, jsonify 
+import jwt
+import jose
+import os 
 
-SECRET_KEY = "super secret secrets"
+SECRET_KEY = "super secret secrets" #grabbing secret key from enviornment 
 
 def encode_token(mechanic_id):
     payload = {
         'exp': datetime.now(timezone.utc) + timedelta(days=0, hours=1),
         'iat': datetime.now(timezone.utc),
-        'sub': mechanic_id
+        'sub': str(mechanic_id)
     }
 
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')

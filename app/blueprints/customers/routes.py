@@ -60,13 +60,13 @@ def update_customer(customer_id):
     db.session.commit()
     return customer_schema.jsonify(customer), 200
 
-@customers_bp.route("<int:customer_id>", methods=["DELETE"])
+@customers_bp.route("/<int:customer_id>", methods=["DELETE"])
 @limiter.limit("15 per hour")
 def delete_customer(customer_id):
     customer = db.session.get(Customers, customer_id)
 
     if not customer:
-        return jsonify({"error": "Customer not found."}), 400
+        return jsonify({"error": "Customer not found."}), 404
     
     db.session.delete(customer)
     db.session.commit()
