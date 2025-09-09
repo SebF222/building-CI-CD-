@@ -4,10 +4,9 @@ from sqlalchemy import String, Date, ForeignKey, Float, Table, Integer, Column, 
 from datetime import datetime, date
 from .extensions import db
 
-class Base(DeclarativeBase):
+class Base(db.Model):
+    __abstract__ = True
     pass
-
-db = SQLAlchemy(model_class=Base)
 
 ticket_mechanics = Table(
     'ticket_mechanic',
@@ -102,3 +101,7 @@ class Parts(Base):
 
     inventory: Mapped['Inventory'] = relationship('Inventory', back_populates='parts')
     ticket: Mapped['Service_tickets'] = relationship('Service_tickets', back_populates='parts')
+
+
+
+    
