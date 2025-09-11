@@ -5,187 +5,145 @@ info:
   description: "Used to manage everday functionalites of a Mechanic shop"
   version: "0.0.1"
 
-host: "127.0.0.1:5000"
+host: "127.0.0.1:5000" #During Development my API is served on my local host (will change when going to prod)
 schemes:
-  - "https"
+  - "http"
 consumes:
-  - "application/json"
+  - "application/json" # My API recieves json data
 produces:
-  - "application/json"
+  - "application/json" # and Here produces a json data
 
-securityDefinitions:
-  bearerAuth:
-  type: apiKey
-  name: Authorization
-  in: header
 
-paths: 
-
-  /mechanics/login:
-    post:
-      tags:
-        - Mechanics
-      summary: "logins for the Mechanics our workers (generates a token)"
-      description: "validates user credentials (email and password), and produces a user specific token."
-      parameters:
-        - in: "body"
+paths: #Information about the routes 
+ 
+  /mechanics/login: #writing out the endpoint URL thats lisitng in postman (the link / whats at the end of the localhost)
+    post: #Request type (post,get,put or delete) where the infomatition is gettiong pulled from
+      tags: #whatever gets tagged they will pop up under here
+        - mechanics #adds route to a category
+      summary: "Login endpoint (Generates a token)" # information about the endpoint (loging in gets you your token)
+      description: "Validates mechanics credntials (email and password), and produces a specific token for the mechanic who is getting/ being logged in" #more in-depth information about the endpoint
+      parameters: #not all will have a parameter such as Get requests. only when reciecing a body parameter, path parameter, query parameter thats when to add a paramter informtion to the request (info about data being sent! dont forget the s in parameters)
+        - in: "body" #where will the info being pulled from/coming from
           name: "body"
-          description: "Login Credentials"
-          required: true
+          description: "Login Credntials" #whats being sent
+          required: true #just lisiting that it will be required 
           schema:
-            $ref: "#/definitions/LoginCredentials"
+            $ref: "#/definitions/LoginCredentials" #should show that this  is whats being referred  data 
       responses:
-        200:
+        200: #lisiting any response you could recieve 
           description: "Login Successful"
-          scehma:
+          schema: 
             $ref: "#/definitions/LoginResponse"
-          examples:
-            application/json:
-                message: "Login Successful"
-                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODg3MTI4NTV9.DmX4kNfX4XH5Zk3n0vZt8fYv3h6Qz8Qz8Qz8Qz8Qz8"
-  
-  /mechanics:
-    post:
-      tags:
-        - Users
-      summary: "enpoint to create a new user"
-      description: "send used info to create a user profile to store in db. create a new user with email, password, role and token, DOB AND address are optional"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "New User Information"
-          required: true
-          schema:
-            $ref: "#/definitions/UserInput"
-      responses:
-        201:
-          description: "Creetion Succesful"
-          scemas:
-            $ref: "#/definitions/UserResponse"
-          examples:
-            application/json:
-                id: 0
-                email: "tester@email.com"
-                role: "admin"
-                password: "<encrypted password>"
-                DOB: "1900-01-01"
-                username: "tester"
-                address: "123 test st, test city, TX 75001"
-    get: 
-      tags:
-        - Mechanics
-      summary: Return all Mechanics
-      description: Returns a list of all mechanics in the database
-      responses:
-        200:
-          description: A list of mechanics
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/mechanicsReponse"
-          examples:
-            application/json:
-              - id: 1
-                email: "
-    put: 
-      tags: 
-      - Mechanics
-      summary: "Update a mechanic's endpoint"
-      description: "endpoint to update  a user, requires a token, user will be identified by the token"
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "Update User Information"
-          required: true
-          schema:
-            $ref: "#/definitions/mechanicsInput"
+          examples: #example of what its going to look like
+          application/json:
+            message: "successfully logged in."
+            status: "successful"
+            token: "ex1eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...."
 
-      responses:
-        200:
-          description: "Update Successful"
-          schema:
-            $ref: "#/definitions/mechanicsResponse"
-          examples:
-            application/json:
-                id: 1
-                email: """
-    delete:
-      tags:
-        - Mechanics 
-      summary: "Delete a mechanic"
-      description: "deletes a mechanic from the database, identified by the token provided" 
-      security:
-        - bearerAuth: []
-      responses:
-        200:
-          scema:
-            type: object
-            properties:
-              message:
-                type: string
+/Mechanics: 
+  post:
+    tags:
+    - Mechanics
+    summary: "Register Mechanic"
+    description: "Send in user info, to create auser profile that will be stored in the data base. DOB and address are opption fields. "
+    parameters:
+      - in: "body"
+        name: "body"
+        description: "New Mechanic Information"
+        required: true
+        schema:
+          $ref: "#/definitions/MechanicInput"
+    responses:
+      201:
+        description: "Creation Successful"
+        schema:
+          $ref: "#/definitions/MechanicResponse"
+        examples:
+          application/json:
+            DOB: "1900-91-01"
+            address: "123 Example St."
+            email: "test@test1.com"
+            id: 0
+            password: "Test1"
+            first_name: "tester"
+            last_name: "Work"
+
+
+
+
 
     
+definitions: # Information about the shape of the input and output json 
 
-definitions:
-
-  LoginCredentials:
-    type: object
+  LoginCredentials: #Input data required for kogin route
+    type: object #what has to get sent to login 
     properties:
-      email:
+      email: 
         type: string
       password:
         type: string 
 
     required:
-      - email 
+      - email
       - password 
-
-  LoginResponse:
+  
+  LoginResponse: #reciting down the response giving from the body of the terminal of postman from login enpoint(after loging in)
     type: object
-    properties:
+    properties: 
       message:
         type: string
+      status: 
+        type: string
       token:
-        type: string    
+        type: string
 
-  mechanicsInput:
+  MechanicInput:
     type: object
     properties:
-      email:
+      DOB:
+        type: string
+      address:
+        type: string
+      email: 
+        type: string
+      first_name:
+        type: string
+      id:
+        type: int
+      last_name:
         type: string
       password:
-        type: string
-      role:
-        type: string
-      token:
-        type: string  
+        type: string 
+      salary:
+        type: float
+    
+    required:
+      - DOB
+      - address 
+      - email
+      - first_name
+      - id
+      - last_name
+      - password
+      - salary
+    
 
-  mechanicsResponse:
-    type: object
+  MechanicResponse:
+    type: object 
     properties:
+      DOB:
+        type: string
+      address:
+        type: string
+      email: 
+        type: string
+      first_name:
+        type: string
       id:
-        type: integer
-      email:
+        type: int
+      last_name:
         type: string
-      role:
-        type: string
-      token:
-        type: string    
-
-  mechanicsReponse:
-    type: array
-    items:
-      type: object
-      properties:
-        id:
-          type: integer
-        email:
-          type: string
-        password:
-          type: string
-        role:
-          type: string
-        token:
-          type: string
+      password:
+        type: string 
+      salary:
+        type: float

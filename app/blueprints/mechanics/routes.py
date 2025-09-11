@@ -7,7 +7,7 @@ from app.models import Mechanics, db, ticket_mechanics
 from . import mechanics_bp
 from app.extensions import limiter, cache
 from app.utils.util import encode_token, token_required 
-
+    
 
 @mechanics_bp.route("/login", methods=["POST"])
 def login():
@@ -26,7 +26,7 @@ def login():
         token = encode_token(mechanic.id)
 
         response = {
-            "status": "success",
+            "status": "successful",
             "message": "successfully logged in.",
             "token": token
         }
@@ -142,3 +142,18 @@ def get_mechanics_by_ticket_count():
         "email": mechanic.email,
         "ticket_count": ticket_count
     } for mechanic, ticket_count in mechanics]), 200
+
+
+
+@mechanics_bp.route('/popular', methods=['GET'])
+def get_popular_mechanic():
+
+    mechanics = db.session.query(Mechanics).all() #grabbing all mechanics
+    mechanics.sort(key= lambda mechanics: len(mechanics.service_tickets), reverse=True)
+
+    return mechanics_schema.jsonify(mechanics[:5])
+
+
+
+
+
