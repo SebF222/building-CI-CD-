@@ -103,6 +103,8 @@ def delete_mechanic(mechanic_id):
     db.session.commit()
     return jsonify({"message": f'mechanic id {mechanic_id}, successfully deleted.'}), 200
 
+
+
 @mechanics_bp.route("/my-tickets", methods=['GET'])
 @token_required
 def get_my_tickets(mechanic_id):
@@ -145,7 +147,7 @@ def get_mechanics_by_ticket_count():
 
 
 
-@mechanics_bp.route('/popular', methods=['GET'])
+@mechanics_bp.route('/popularity', methods=['GET'])
 def get_popular_mechanic():
 
     mechanics = db.session.query(Mechanics).all() #grabbing all mechanics

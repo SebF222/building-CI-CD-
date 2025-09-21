@@ -74,6 +74,10 @@ def edit_ticket(ticket_id):
     if not ticket:
         return jsonify({"error": "Service ticket not found"}), 404
 
+    for field in ['customers_id', 'description', 'price', 'vin']:
+        if field in ticket_edit:
+            setattr(ticket, field, ticket_edit[field])
+
     for mechanic_id in ticket_edit.get('add_mechanic_ids', []):
         query = select(Mechanics).where(Mechanics.id == mechanic_id)
         mechanic = db.session.execute(query).scalars().first()

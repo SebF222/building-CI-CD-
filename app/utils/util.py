@@ -29,7 +29,7 @@ def token_required(f):
             token = request.headers['Authorization'].split()[1]
 
             if not token:
-                return jsonify({'message': 'missing token'}), 400
+                return jsonify({'message': 'missing token'}), 401
             
             try:
 
@@ -37,12 +37,12 @@ def token_required(f):
                 print(data)
                 mechanic_id = data['sub']
             except jwt.ExpiredSignatureError as e:
-                return jsonify({'message': 'token expired'}), 400 
+                return jsonify({'message': 'token expired'}), 401
             except jwt.InvalidTokenError:
-                return jsonify({'message': 'invalid token'}), 400
+                return jsonify({'message': 'invalid token'}), 401
             
             return f(mechanic_id, *args, **kwargs)
         
         else: 
-            return jsonify({'message': 'you must be logged in to access this.'}), 400
+            return jsonify({'message': 'you must be logged in to access this.'}), 401
     return decorated

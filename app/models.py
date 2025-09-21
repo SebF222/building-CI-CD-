@@ -46,7 +46,7 @@ class Service_tickets(Base):
     customers_id: Mapped[int] = mapped_column(ForeignKey('customers.id'), nullable=False)
     description: Mapped[str] = mapped_column(String(500))
     price: Mapped[float] = mapped_column(Float)
-    vin: Mapped[str] = mapped_column(String(17), unique=True, nullable=False)
+    vin: Mapped[str] = mapped_column(String(17), nullable=False)
     date: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
 

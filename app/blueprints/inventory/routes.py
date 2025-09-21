@@ -2,9 +2,10 @@ from flask import Blueprint, request, jsonify
 from sqlalchemy import select
 from marshmallow import ValidationError
 from app import db
-from app.models import Inventory
-from app.blueprints.inventory.schemas import inventory_schema, inventories_schema
+from app.models import Inventory, Parts
+from app.blueprints.inventory.schemas import inventory_schema, inventories_schema 
 from . import inventory_bp
+from app.blueprints.parts.schemas import all_parts_schema
 
 inventory_bp = Blueprint('inventory', __name__)
 @inventory_bp.route("", methods=['GET'])
@@ -60,18 +61,29 @@ def update_inventory(inventory_id):
 
 @inventory_bp.route("/<int:inventory_id>", methods=['DELETE'])
 def delete_inventory(inventory_id):
-    query = select(Inventory).where(Inventory.id == inventory_id)
-    inventory = db.session.execute(query).scalars().first()
+    try:
+        inventory = db.session.get(Inventory, inventory_id)  # Simpler query
+        
+        if inventory is None:
+            return jsonify({"error": f"Inventory with id {inventory_id} not found"}), 404
+        
+        parts_query = select(Parts).where(Parts.desc_id == inventory_id)
+        parts_to_delete = db.session.execute(parts_query).scalars().all()
 
-    db.session.delete(inventory)
-    db.session.commit()
-    return jsonify({"message": f'Inventory id {inventory_id}, successfully deleted.'}), 200
-
+        for part in parts_to_delete:
+            db.session.delete(part)
+        
+        db.session.delete(inventory)
+        db.session.commit()
+        return jsonify({"message": f"Inventory id {inventory_id} successfully deleted"}), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Delete failed: {str(e)}"}), 500
+    
 @inventory_bp.route("/<int:inventory_id>/parts", methods=['GET'])
 def get_inventory_parts(inventory_id):
-    from app.models import Parts
-    from app.blueprints.parts.schemas import all_parts_schema
-    
+
     inventory = db.session.get(Inventory, inventory_id)
     if not inventory:
         return jsonify({"error": "Inventory not found"}), 404
