@@ -5,9 +5,9 @@ info:
   description: "Used to manage everday functionalites of a Mechanic shop"
   version: "0.0.1"
 
-host: "127.0.0.1:5000" #During Development my API is served on my local host (will change when going to prod)
+host: "mechanic-shop-api-1u5f.onrender.com" #During Development my API is served on my local host (will change when going to prod) thenm i changed the host to my render uri 
 schemes:
-  - "http"
+  - "https"
 consumes:
   - "application/json" # My API recieves json data
 produces:
