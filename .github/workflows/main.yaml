@@ -54,14 +54,14 @@ jobs: # The actions getting performed
 
       - name: Install dependencies
         run: |
-          python -m pip install --ugrade pip 
+          python -m pip install --upgrade pip 
           python -m pip install -r requirements.txt
 
       - name: Run tests
         run: python -m unittest discover -s tests -p 'test_*.py' #Running all test files inside my test folder as long as the file is named test_<anthing>.py
 
   deploy: 
-    needs: build #Means that we need the build job to complete before we run our test
+    needs: build #Means that we need the build job to complete before we run our tests
     runs-on: ubuntu-latest # still have to re write
 
     steps:
@@ -69,7 +69,7 @@ jobs: # The actions getting performed
         uses: actions/checkout@v2 # check for errors and make sure there isnt any
 
       - name: Set Up Python
-        uses: action/setup-python@v2
+        uses: actions/setup-python@v2
         with:
           python-version: 3.12
 
@@ -80,7 +80,7 @@ jobs: # The actions getting performed
 
       - name: Install dependencies
         run: |
-          python -m pip install --ugrade pip 
+          python -m pip install --upgrade pip 
           python -m pip install -r requirements.txt
         
       - name: Deploy to production
