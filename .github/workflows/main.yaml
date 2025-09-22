@@ -13,7 +13,7 @@ jobs: # The actions getting performed
         uses: actions/checkout@v2 # scans the code base for sentax errors and checks for errors and make sure there isnt any
 
       - name: Set Up Python
-        uses: action/setup-python@v2
+        uses: actions/setup-python@v2
         with:
           python-version: 3.12 
 
