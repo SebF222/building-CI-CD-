@@ -6,7 +6,7 @@ import jwt
 import jose
 import os 
 
-SECRET_KEY = "super secret secrets" #grabbing secret key from enviornment 
+SECRET_KEY = os.environ.get('SECRET_KEY') or 'super secret secrets' #grabbing my secret key from enviornment 
 
 def encode_token(mechanic_id):
     payload = {
