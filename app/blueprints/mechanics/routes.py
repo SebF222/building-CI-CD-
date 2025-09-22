@@ -36,7 +36,7 @@ def login():
         return jsonify({"message": "Invalid email or password!"})
         
 @mechanics_bp.route("", methods=['POST'])
-@limiter.limit("10 per day")
+@limiter.limit("50 per day")
 def create_member():
     try:
         Mechanic_data = mechanic_schema.load(request.json)
